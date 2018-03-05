@@ -1,0 +1,5 @@
+mktextfm IPAMincho/OT
+mktextfm IPAexMincho/OT
+mktextfm IPAexGothic/OT
+mktextfm IPAexGothic/I/OT
+mktextfm IPAexGothic/OT
