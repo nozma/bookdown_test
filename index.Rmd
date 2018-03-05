@@ -1,6 +1,5 @@
 ---
 site: bookdown::bookdown_site
-output:
 documentclass: bxjsarticle
 classoption: xelatex,ja=standard
 geometry: no
@@ -30,11 +29,9 @@ install.packages("bookdown")
 rmd_files: ["index.Rmd", "second.Rmd", "third.Rmd"]
 ```
 
-    
-
 ## YAMLフィールドの指定
 
-`_bookdown.yml`でも指定できるが、最初のRmdファイルのYAMLメタデータでPandoc関連の設定を指定することもできる。このファイルの指定例を示す。
+`_bookdown.yml`でも指定できるが、最初のRmdファイルのYAMLメタデータでPandoc関連の設定を指定することもできる。このファイルの指定例を示す。(`site: bookdown::bookdown_site`はRmdファイルで指定する必要がある？)
 
 ```yml
 ---
@@ -46,6 +43,7 @@ documentclass: book
 rmd_files: ["index.Rmd", "second.Rmd"]
 output: 
   bookdown::gitbook: default
+output_dir: docs  
 ---
 ```
 
@@ -76,3 +74,8 @@ bookdown::html_book:
   css: toc.css
 ```
 
+## GitHubで公開するまで
+
+- docsフォルダに出力する必要があるため、YAMLメタデータか`_bookdown.yml`に`output_dir: docs`を指定しておく。
+- Buildペインの`Build Book`ボタンを押す。
+- GitHubのリポジトリを開き、Settingsタブの下部にあるGitHub Pagesの部分でSourceにmaster branch /docs folderを指定。
