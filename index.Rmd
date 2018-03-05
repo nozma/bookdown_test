@@ -1,78 +1,65 @@
 ---
 site: bookdown::bookdown_site
 output:
-documentclass: bxjsarticle
-classoption: xelatex,ja=standard
-geometry: no
+  bookdown::gitbook: default
+output_dir: docs
 ---
 
+# はじめに
 
-# 事前準備
+とりあえず細かいセッティングは抜きにして手元のRmdファイルをGitHub上に公開したい、という気持ちだったので最低限の手順をまとめました。
 
-- githubで新規リポジトリを作成する。
-- RStudioから`New Project -> VersionControl -> Git`と選択し、Repository URLに先程作成したリポジトリのURLを指定、新規プロジェクトを作成する。
+## 事前準備
+
 - `bookdown`パッケージをインストールしていなければインストールしておく。
 
 ```r
 install.packages("bookdown")
 ```
 
+- githubで新規リポジトリを作成する。
+- RStudioから`New Project -> VersionControl -> Git`と選択し、Repository URLに先程作成したリポジトリのURLを指定、新規プロジェクトを作成する。
+
+
 ## Rmdファイルについて
 
-- Rmdファイルはワーキングディレクトリに配置する。
-- デフォルトでは、Rmdファイルは名前順に結合される。例えば`01-intro.Rmd`の次は`02-literature.Rmd`といった具合に。
-- アンダースコア`_`から始まるファイルは無視される。
-- `index.Rmd`というファイルがあった場合は、常に最初のファイルとして使用される。
-- ファイル名に関するこれらの挙動は`_bookdown.yml`というファイルをbookのディレクトリに配置し、設定を記入することで上書きできる。
-    - 例: Rmdファイルの名前と処理順序を指定したければ、`rmd_files`フィールドに指定する。
+- デフォルトではプロジェクトのトップディレクトリに配置されたRmdファイルが結合されたのち、Knitされる。
+    - 全てのRmdファイルが1つのRmdファイルとして評価されるので、例えば設定用のコードチャンクは先頭のファイルに1回書いてあればよい。
+    - チャンクラベルが重複しないように注意する必要がある。
+- デフォルトではRmdファイルの結合順序は名前順である。
+    - ファイル名の先頭に数字を入れると良い。例えば`01_first.Rmd`の次は`02_second.Rmd`といった具合に。
+    - ただし、`index.Rmd`というファイルがあれば、常に最初のファイルとして使用される。
+    - アンダースコア`_`から始まるファイルは無視される。
     
-```yml
-rmd_files: ["index.Rmd", "second.Rmd", "third.Rmd"]
-```
-
-    
+注: 上記の挙動は当然変更できるが、ここでは説明しない。
 
 ## YAMLフィールドの指定
 
-`_bookdown.yml`でも指定できるが、最初のRmdファイルのYAMLメタデータでPandoc関連の設定を指定することもできる。このファイルの指定例を示す。
+各種の設定は最初のRmdファイル(前述の通り、通常は`index.Rmd`)のヘッダーにYAMLフロントマターとして記述する。以下に最低限の記述を示す。
 
 ```yml
 ---
-title: "bookdownの説明"
-author: "かつどん"
-date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
-documentclass: book
-rmd_files: ["index.Rmd", "second.Rmd"]
-output: 
+output:
   bookdown::gitbook: default
+output_dir: docs
 ---
 ```
 
-## ファイルの結合
+- `site: bookdown::bookdown_site`は`bookdown::render_book()`を呼び出すために必要な設定らしい。
+- `output`フィールドで出力形式を指定する。
+- `output_dir`は出力先ディレクトリを指定する。GitHubでサイトとして公開するためには`docs/`以下に出力する必要がある。
 
-- Rmdファイルをマージしてからknitする(M-Kアプローチ)か、それぞれknitしてからマージする(K-Mアプローチ)か、2つの方法がある。
-- 大きな違いはコードチャンクが同時に評価されるか、ファイルごとに評価されるかという点である。
-- knitrはチャンクラベルの重複を許していないため、M-Kアプローチでは全てのファイルに渡ってチャンクラベルが重複しないように注意する必要がある。K-Mアプローチでは一つのファイル内でチャンクラベルが重複しなければ良い。
-- K-MアプローチではRmdファイルをサブディレクトリに入れることはできないが、M-Kアプローチなら可能である。
-- デフォルトはM-Kアプローチであり、変更したければ`render_book()`呼び出し時に`new_session = TRUE`を指定するか、`_bookdown.yml`に`new_session: yes`を指定する。
+注: `_bookdown.yml`や`_output.yml`というファイルに設定を分散させることもできるが、ここでは説明しない。著者やタイトルみたいな情報も含められるが、これも説明しない。
 
+## ビルド
 
-## 出力設定
+- BuildタブのBuild Bookをクリック。
+    - Buildタブが無い場合はファイルを保存してRStudioを開き直すと出る。多分。
+    
+## 公開
 
-- 出力に関する設定は、最初のRmdファイルにYAMLメタデータとして記載する他に、`_output.yml`というファイルを作成してそこに記述する方法もある。
-- Rmdファイルに記述する場合は、`output`フィールドに記載するが(先程の例にも含まれている)、`_output.yml`に記述する場合は`output`フィールドを省略し、すべての設定をトップレベルに記述する。また、`---`は不要である。以下に例を示す。
-
-```yml
-bookdown::gitbook:
-  lib_dir: assets
-  split_by: section
-  config:
-    toolbar:
-      position: static
-bookdown::pdf_book:
-  keep_tex: yes
-bookdown::html_book:
-  css: toc.css
-```
-
+- GitタブからCommitしてPush
+- GitHubのリポジトリページを開き、Settingsタブの下の方のGitHub PagesのSourceをmaster branch /docs folderに変更してSave
+- 今設定したGitHub　Pagesの欄に"Your site is published at ..."と説明が出ているので、そこからリンク先へ飛ぶとdocsフォルダ以下の内容が公開されている。
+    - Save直後は404が表示される。反映まで10分くらいかかることがある。
