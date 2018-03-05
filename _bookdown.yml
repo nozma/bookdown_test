@@ -1,6 +1,0 @@
-title: "bookdownの説明"
-author: "かつどん"
-date: "`r Sys.Date()`"
-documentclass: book
-#rmd_files: ["index.Rmd", "02_second.Rmd"]
-output_dir: docs
