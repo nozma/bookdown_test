@@ -1,0 +1,78 @@
+---
+site: bookdown::bookdown_site
+output:
+documentclass: bxjsarticle
+classoption: xelatex,ja=standard
+geometry: no
+---
+
+
+# 事前準備
+
+- githubで新規リポジトリを作成する。
+- RStudioから`New Project -> VersionControl -> Git`と選択し、Repository URLに先程作成したリポジトリのURLを指定、新規プロジェクトを作成する。
+- `bookdown`パッケージをインストールしていなければインストールしておく。
+
+```r
+install.packages("bookdown")
+```
+
+## Rmdファイルについて
+
+- Rmdファイルはワーキングディレクトリに配置する。
+- デフォルトでは、Rmdファイルは名前順に結合される。例えば`01-intro.Rmd`の次は`02-literature.Rmd`といった具合に。
+- アンダースコア`_`から始まるファイルは無視される。
+- `index.Rmd`というファイルがあった場合は、常に最初のファイルとして使用される。
+- ファイル名に関するこれらの挙動は`_bookdown.yml`というファイルをbookのディレクトリに配置し、設定を記入することで上書きできる。
+    - 例: Rmdファイルの名前と処理順序を指定したければ、`rmd_files`フィールドに指定する。
+    
+```yml
+rmd_files: ["index.Rmd", "second.Rmd", "third.Rmd"]
+```
+
+    
+
+## YAMLフィールドの指定
+
+`_bookdown.yml`でも指定できるが、最初のRmdファイルのYAMLメタデータでPandoc関連の設定を指定することもできる。このファイルの指定例を示す。
+
+```yml
+---
+title: "bookdownの説明"
+author: "かつどん"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+documentclass: book
+rmd_files: ["index.Rmd", "second.Rmd"]
+output: 
+  bookdown::gitbook: default
+---
+```
+
+## ファイルの結合
+
+- Rmdファイルをマージしてからknitする(M-Kアプローチ)か、それぞれknitしてからマージする(K-Mアプローチ)か、2つの方法がある。
+- 大きな違いはコードチャンクが同時に評価されるか、ファイルごとに評価されるかという点である。
+- knitrはチャンクラベルの重複を許していないため、M-Kアプローチでは全てのファイルに渡ってチャンクラベルが重複しないように注意する必要がある。K-Mアプローチでは一つのファイル内でチャンクラベルが重複しなければ良い。
+- K-MアプローチではRmdファイルをサブディレクトリに入れることはできないが、M-Kアプローチなら可能である。
+- デフォルトはM-Kアプローチであり、変更したければ`render_book()`呼び出し時に`new_session = TRUE`を指定するか、`_bookdown.yml`に`new_session: yes`を指定する。
+
+
+## 出力設定
+
+- 出力に関する設定は、最初のRmdファイルにYAMLメタデータとして記載する他に、`_output.yml`というファイルを作成してそこに記述する方法もある。
+- Rmdファイルに記述する場合は、`output`フィールドに記載するが(先程の例にも含まれている)、`_output.yml`に記述する場合は`output`フィールドを省略し、すべての設定をトップレベルに記述する。また、`---`は不要である。以下に例を示す。
+
+```yml
+bookdown::gitbook:
+  lib_dir: assets
+  split_by: section
+  config:
+    toolbar:
+      position: static
+bookdown::pdf_book:
+  keep_tex: yes
+bookdown::html_book:
+  css: toc.css
+```
+
