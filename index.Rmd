@@ -2,12 +2,17 @@
 site: bookdown::bookdown_site
 output:
   bookdown::gitbook: default
-output_dir: docs
 ---
 
 # はじめに
 
-とりあえず細かいセッティングは抜きにして手元のRmdファイルをGitHub上に公開したい、という気持ちだったので最低限の手順をまとめました。
+とりあえず細かいセッティングは抜きにして手元のRmdファイルをGitHub上に公開したい、という気持ちだったので最低限の手順をまとめた。
+
+## bookdownとは
+
+R Markdownからドキュメントを作成するパッケージで、通常のR Markdownに対して(というかPandoc Markdownに対して)長編のドキュメントを生成するのに便利な機能が付け加えられている。図表や数式へのナンバリング、相互参照、複数ページのHTML出力などなど。
+
+必ずしも本を書かなくてもいいし、R Markdownじゃなくて普通のMarkdownでも扱えるので、Rのコードを全く含まないポエムを書いたって全く構わない！
 
 ## 事前準備
 
@@ -41,15 +46,26 @@ install.packages("bookdown")
 site: bookdown::bookdown_site
 output:
   bookdown::gitbook: default
-output_dir: docs  
 ---
 ```
 
 - `site: bookdown::bookdown_site`は`bookdown::render_book()`を呼び出すために必要な設定らしい。
 - `output`フィールドで出力形式を指定する。
-- `output_dir`は出力先ディレクトリを指定する。GitHubでサイトとして公開するためには`docs/`以下に出力する必要がある。
+- `site`フィールド以外は別途`_bookdown.yml`というファイルを用意して、そこに記述することもできる。
+- 一部の**bookdown**に関連した設定は`_bookdown.yml`からしか読み込まれないので記述しなければならない。GitHubで公開しようとすると出力先ディレクトリを指定する必要があるので、実質`_bookdown.yml`は必須である。
+- `_bookdown.yml`の`output_dir`で出力先ディレクトリを指定する。GitHubでサイトとして公開するためには`docs/`以下に出力する必要があるので、最低限以下の設定が必要となる。このとき、`---`は不要である。なお、行末に改行が無いと怒られる(ビルドはできる)。
 
-注: `_bookdown.yml`や`_output.yml`というファイルに設定を分散させることもできるが、ここでは説明しない。著者やタイトルみたいな情報も含められるが、これも説明しない。
+```yml:_bookdown.yml
+output_dir: docs
+
+```
+
+`output`フィールドの内容は時に長くなるのと使いまわしたくなるので、別途`_output.yml`というファイルに記述しても良い。このとき前後の`---`が不要なのに加えて、`output:`も省略して下のフィールドから書き始める。例えば先程のフロントマターの内容を`_output.yml`に記述するなら次のようになる。
+
+```yml:_output.yml
+bookdown::gitbook: default
+
+```
 
 ## ビルド
 
@@ -62,3 +78,5 @@ output_dir: docs
 - GitHubのリポジトリページを開き、Settingsタブの下の方のGitHub PagesのSourceをmaster branch /docs folderに変更してSave
 - 今設定したGitHub　Pagesの欄に"Your site is published at ..."と説明が出ているので、そこからリンク先へ飛ぶとdocsフォルダ以下の内容が公開されている。
     - Save直後は404が表示される。反映まで10分くらいかかることがある。
+
+この内容にセクションを少し加えたページをサンプルとして公開してある→[bookdown_test](https://nozma.github.io/bookdown_test/)[](https://nozma.github.io/bookdown_test/)
